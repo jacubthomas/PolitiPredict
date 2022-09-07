@@ -1,0 +1,21 @@
+For algorithm to work, effectively multiple processing techniques will need to
+applied to the input text. Things such as Naive Bayes word weighting, semantics +
+sentimental evaluation, etc.
+
+Ultimately, each processing technique should contribute to a fractional of the
+score/ruling. Something as simple as:
+
+    SCORE = (Bayes)PARTY * 0.33 + (S+S)PARTY * 0.66
+
+        where SCORE, PARTY are vectors, (Liberal, Conservative, ...)
+
+    if SCORE_l > SCORE_r and |Score_l - Score_r| > Epsilon:
+
+        ruling = Liberal
+
+    elif  SCORE_l < SCORE_r and |Score_l - Score_r| > Epsilon:
+
+        ruling = Conservative
+
+    else
+        ruling = Moderate

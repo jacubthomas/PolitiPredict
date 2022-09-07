@@ -1,0 +1,50 @@
+For this project, my primary endgoal is to assess a given input text and return
+the political bias (party) it may stem from. I will do so by combining various
+natural language processing techniques. I would then to find a meaningful way
+to visualize these results.
+
+    Perhaps some other interesting outputs aside from the assessed bias lie in
+    the evidence which helped determine the ruling:
+        1) output sentiment towards proper nouns
+            i.e. "Obama has helped millions attain affordable medical care"
+
+            sentiment towards Obama:
+                pos: .801, neut: .199, neg: 0
+
+            aggregate sentiment towards Obama:
+                liberal - pos: .663, neut: .249, neg: .088
+                conservative - pos: .154, neut: .285, neg: .561
+
+            Senti ruling: Liberal
+
+        2) Semantic, different from sentiment:
+            how does each party connect nouns to other nouns?
+            i.e. Trump economy
+            
+            r - trump is helping economy
+            l - trump is hurting climate efforts
+
+        3) Output Naive Bayes weighting:
+                processed input = (Obama) + (helped) + (millions) + (attain) 
+                    + (affordable) + (medical) + (care)
+
+                L : (.000671) + (.0000256) + (.0000199) + (0.00000884)
+                    + (.000356) + (.000243) + (.0000715) = .00139584
+                R : .000452) + (.0000283) + (.0000214) + (0.00000884)
+                    + (.0000998) + (.000208) + (.0000771) =.00089544
+                
+                L .00139584 > .00089544 R
+                
+                Top word deltas: Obama, affordable, ...
+
+            NB ruling: Liberal
+
+Some stretch goals for me: 
+
+1) implement a means for boiling a statement down to
+raw facts. where it can be helpful to know who the tale comes from, it can be
+also helpful to strip the bias to facts.
+
+2) identify opposing political opinion and, further, return quotes which
+reflect their side of the story. The former may be as trivial assuming the
+counterstatement and the former may be more complicated than time permits.  

@@ -1,0 +1,61 @@
+NB
+    data + structure: do I want to evaluate/store 1 word, or several
+        1: "Trump", "Vaccination", "Pollution", "Inflation"
+        2: "Student debt", "January 6th", "Sleepy Joe"
+        3: "Black lives matter", "2nd amendment rights", ...
+
+        - preprocess
+
+        - train
+
+        - test
+
+        - store
+
+        - make retrievable
+S+S
+    - data: identify proper nouns, select top x, for i in x partition into 
+        train, test
+
+    - structure: determine
+
+    - preprocess
+
+    - train
+
+    - test
+
+    - store
+
+    - make retrievable
+
+Algo:
+
+    - implement NB
+
+    - implement S+S
+
+    - combine scores with disparate weights and make ruling
+
+    - test
+
+    - tune
+
+Output:
+
+    - determine data relevant for output
+
+    - determine means/style of output
+
+
+Input:
+    - Which dataset to use
+        reddit from kaggle
+        more formal dataset (news articals)
+            - pre-existing
+            - manually scraped
+    
+    - How can data remain relevant
+
+    - How can data be added into mix over time
+
