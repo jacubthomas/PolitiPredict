@@ -1,3 +1,4 @@
+import sys
 import nltk
 import reddit
 import random
@@ -59,7 +60,7 @@ for d in documents:
 all_words = nltk.FreqDist (all_words)
 
 # list of top 3000 occurring words in posts
-word_features = list (all_words.keys ())[:3000]
+word_features = list (all_words.keys ())[:7500]
 
 '''
     create a complex set of tuples, or rather features, by party.
@@ -84,5 +85,25 @@ classifier = nltk.NaiveBayesClassifier.train (training_set)
 print (f"Naive Bayes Algo accuracy: {(nltk.classify.accuracy(classifier, testing_set)) * 100}%")
 
 # output top words
-classifier.show_most_informative_features (15)
+classifier.show_most_informative_features (100)
 
+print (f"Enter a phrase or `q` to exit: ")
+
+for line in sys.stdin:
+    if 'q' == line.rstrip():
+        break
+    fs = reddit.find_the_features(line, word_features)
+    label = classifier.prob_classify (fs)
+    # print (f"probability: {label.prob (fs)}")
+    print (f"statement is: {classifier.classify (fs)}\n")
+    print (f"l prob dist: {label._prob_dict['Liberal']}; r prob dist: {label._prob_dict['Conservative']}\n")
+print("Exit")
+
+'''
+These tests from random posts are being accurately predicted, however random text is less accurate
+
+# federal grand jury indicts former trump adviser steve bannon contempt congress
+# capitalism god way determining smart poor ron swanson
+# donald trump jr. full speech cpac 2022 orlando
+# how hospital scrubs reinforce sexist double standards
+'''

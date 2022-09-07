@@ -1,3 +1,4 @@
+from operator import truediv
 from nltk.corpus import wordnet as wn
 from cgitb import text
 from nltk.stem import WordNetLemmatizer
@@ -55,16 +56,17 @@ def stopWords (sentence: str):
         pass
     return " ".join (filtered_sentence)
 
-def find_the_features (document, word_features):
-	# all unique words in a document
-	words = set (document)
-	features = {}
 
-	# map all words to boolean, if present/absent from top 3000
-	for w in word_features:
-		features[w] = (w in words)
-	
-	return features
+# seems to be a better approach to only include true hits
+def find_the_features (document, word_features):
+    # all unique words in a document
+    words = set (document)
+    features = {}
+    for w in word_features:
+        if w in words:
+            features[w] = True
+
+    return features
 
 
 # UNUSED 
