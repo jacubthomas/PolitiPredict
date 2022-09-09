@@ -1,7 +1,9 @@
+import io
 import sys
 import nltk
 import reddit
 import random
+from nltk.tokenize import word_tokenize
 
 # how the dataset will be split up
 training_partition = 0.7
@@ -34,7 +36,14 @@ random.shuffle (recombined_posts)
 
 # remove stop words
 for post in recombined_posts:
-    post.text = reddit.stopWords(post.text)
+    post.text = reddit.stopWords (post.text)
+
+# converts similar words to a root word
+lemmatizer = nltk.WordNetLemmatizer ()
+for post in recombined_posts:
+    before = post.text
+    post.text = reddit.lemmatizeMe (lemmatizer, post.text)
+    after = post.text
 
 ''' 
     create a list of tuples composed of all words in a post, 
@@ -84,20 +93,36 @@ classifier = nltk.NaiveBayesClassifier.train (training_set)
 # output accuracy
 print (f"Naive Bayes Algo accuracy: {(nltk.classify.accuracy(classifier, testing_set)) * 100}%")
 
-# output top words
-classifier.show_most_informative_features (100)
+# capturing stdout from s_m_i_f to gather words w/ weights
+old_stdout = sys.stdout
+new_stdout = io.StringIO()
+sys.stdout = new_stdout
+
+classifier.show_most_informative_features (5000)
+output = new_stdout.getvalue()
+
+weighted_features = {}
+highest_values = reddit.updateWeightedFeatures (weighted_features, output)
+
+# restore stdout
+sys.stdout = old_stdout
+
+print (f"Most important features\n{highest_values}")
 
 print (f"Enter a phrase or `q` to exit: ")
 
 for line in sys.stdin:
     if 'q' == line.rstrip():
         break
-    fs = reddit.find_the_features(line, word_features)
-    label = classifier.prob_classify (fs)
+    line = reddit.processInput (line)
+    tokenized = word_tokenize (line)
+    # fs = reddit.find_the_features(tokenized, word_features)
+    # label = classifier.prob_classify (fs)
     # print (f"probability: {label.prob (fs)}")
-    print (f"statement is: {classifier.classify (fs)}\n")
-    print (f"l prob dist: {label._prob_dict['Liberal']}; r prob dist: {label._prob_dict['Conservative']}\n")
+    print (f"statement is: {reddit.handleClassification (weighted_features, line)}\n")
+    # print (f"l prob dist: {label._prob_dict['Liberal']}; r prob dist: {label._prob_dict['Conservative']}\n")
 print("Exit")
+
 
 '''
 These tests from random posts are being accurately predicted, however random text is less accurate

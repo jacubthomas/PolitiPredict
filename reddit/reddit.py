@@ -56,6 +56,22 @@ def stopWords (sentence: str):
         pass
     return " ".join (filtered_sentence)
 
+# enables smart lemmatization using part of speech association
+def lemmatizeMe(lemma: WordNetLemmatizer, post: str) -> str:
+    words = word_tokenize (post)
+    tagged = nltk.pos_tag(words)
+    for w in range (0, len (tagged)):
+        if tagged[w][1].startswith('J'):
+            words[w] = lemma.lemmatize(tagged[w][0], wn.ADJ)
+        elif tagged[w][1].startswith('V'):
+            words[w] = lemma.lemmatize(tagged[w][0], wn.VERB)
+        elif tagged[w][1].startswith('N'):
+            words[w] = lemma.lemmatize(tagged[w][0], wn.NOUN)
+        elif tagged[w][1].startswith('R'):
+            words[w] = lemma.lemmatize(tagged[w][0], wn.ADV)
+        else:
+            words[w] = lemma.lemmatize(tagged[w][0])
+    return " ".join(words)
 
 # seems to be a better approach to only include true hits
 def find_the_features (document, word_features):
@@ -68,6 +84,46 @@ def find_the_features (document, word_features):
 
     return features
 
+def processInput (line: str) -> str:
+    try:
+        line = line.lower ()
+    except AttributeError:
+        pass
+    line = stopWords (line)
+    lemmatizer = WordNetLemmatizer ()
+    line = lemmatizeMe (lemmatizer, line)
+    return line
+
+# Score by weights and output outcome
+def handleClassification (weighted_features: dict, line: str) -> str:
+    l_score, r_score = 0,0
+    line_as_list = line.split()
+    for x in line_as_list:
+        if weighted_features.get(x) != None:
+            if weighted_features[x][0].startswith('L'):
+                l_score += float (weighted_features[x][1])
+            else:
+                r_score += float (weighted_features[x][1])
+    if l_score > r_score:
+        return f"Liberal: {l_score} > {r_score}"
+    else:
+        return f"Conservative: {l_score} < {r_score}"
+
+# populate map with key = word, value (party, weight)
+# returns 25 key words with weights
+def updateWeightedFeatures (weighted_features: dict, output: str) -> str:
+    highest_values = ""
+    output_as_list = output.split ()
+    output_as_list = output_as_list[3:]
+    for i in range (0, int (len (output_as_list) / 10)):
+        weighted_features[output_as_list[i*10]] = (
+            output_as_list[i*10+5],
+            output_as_list[i*10+7]
+        )
+        if i < 25:
+            highest_values += f"{output_as_list[i*10]} : {output_as_list[i*10+5]} : {output_as_list[i*10+7]}\n"
+
+    return highest_values
 
 # UNUSED 
 def allWordsInList (words):
