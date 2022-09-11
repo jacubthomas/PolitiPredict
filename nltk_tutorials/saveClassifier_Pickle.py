@@ -2,23 +2,16 @@ from traceback import print_tb
 import nltk
 import random
 from nltk.corpus import movie_reviews
+import pickle
 
 '''
-# clever, but less readable
-documents = [(list (movie_reviews.words (fileid)), category)
-	for category in movie_reviews.categories ()
-	for fileid in movie_reviews.fileids (category)]
+Pickle allows for saving a trained algorithm so it can be used without reprocessing
 '''
+
 documents = []
 for category in movie_reviews.categories ():
 	for fileid in movie_reviews.fileids (category):
 			documents.append ((list (movie_reviews.words (fileid)), category))
-
-
-'''
-# testing purposes
-print (documents[1])
-'''
 
 all_words = []
 
@@ -52,7 +45,15 @@ testing_set = featuresets[1900:]
 print (len (training_set))
 # posterior = prior occurences * liklihood / evidence
 
-classifier = nltk.NaiveBayesClassifier.train (training_set)
+# classifier = nltk.NaiveBayesClassifier.train (training_set)
+
+classifier_f = open ("naivebayes.pickle", "rb")
+classifier = pickle.load (classifier_f)
+classifier_f.close ()
 
 print (f"Naive Bayes Algo accuracy: {(nltk.classify.accuracy(classifier, testing_set)) * 100}%")
 classifier.show_most_informative_features (15)
+
+# save_classifier = open ("naivebayes.pickle", "wb")
+# pickle.dump (classifier, save_classifier)
+# save_classifier.close ()
