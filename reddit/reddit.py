@@ -105,6 +105,21 @@ def handleClassification (weighted_features: dict, line: str) -> str:
             else:
                 r_score += float (weighted_features[x][1])
     if l_score > r_score:
+        return "Liberal"
+    else:
+        return "Conservative"
+
+# duplicated code as above to include/test additional sk-algos
+def classify (weighted_features: dict, line: str) -> str:
+    l_score, r_score = 0,0
+    line_as_list = line.split()
+    for x in line_as_list:
+        if weighted_features.get(x) != None:
+            if weighted_features[x][0].startswith('L'):
+                l_score += float (weighted_features[x][1])
+            else:
+                r_score += float (weighted_features[x][1])
+    if l_score > r_score:
         return f"Liberal: {l_score} > {r_score}"
     else:
         return f"Conservative: {l_score} < {r_score}"

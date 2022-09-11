@@ -116,19 +116,5 @@ for line in sys.stdin:
         break
     line = reddit.processInput (line)
     tokenized = word_tokenize (line)
-    # fs = reddit.find_the_features(tokenized, word_features)
-    # label = classifier.prob_classify (fs)
-    # print (f"probability: {label.prob (fs)}")
     print (f"statement is: {reddit.handleClassification (weighted_features, line)}\n")
-    # print (f"l prob dist: {label._prob_dict['Liberal']}; r prob dist: {label._prob_dict['Conservative']}\n")
 print("Exit")
-
-
-'''
-These tests from random posts are being accurately predicted, however random text is less accurate
-
-# federal grand jury indicts former trump adviser steve bannon contempt congress
-# capitalism god way determining smart poor ron swanson
-# donald trump jr. full speech cpac 2022 orlando
-# how hospital scrubs reinforce sexist double standards
-'''
