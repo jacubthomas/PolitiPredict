@@ -112,17 +112,26 @@ def classifyByWeightedFeatures (self, post):
             elif feature[0].startswith("L"):
                 l_score += float (feature[1])
     
-    if l_score > r_score:
+    if l_score == r_score == 0:
+        return "No Contest"
+    elif l_score > r_score:
         return "Liberal"
     elif l_score < r_score:
         return "Conservative"
     else: 
         return "Moderate"
 
-def outputResults (classifier, correct, unsure, wrong, length):
+'''
+correct === accurate predictions
+wrong === inaccurate predictions
+unsure === Moderate === tie in votes
+no contests entail there were no votes on either side
+'''
+def outputResults (classifier, correct, unsure, wrong, no_contest, length):
     print (f"[{classifier}] correct:{correct}/{length} || {(correct / length) * 100}")
     print (f"[{classifier}] unsure:{unsure}/{length} || {(unsure / length) * 100}")
-    print (f"[{classifier}] wrong:{wrong}/{length} || {(wrong / length) * 100}\n\n")
+    print (f"[{classifier}] wrong:{wrong}/{length} || {(wrong / length) * 100}")
+    print (f"[{classifier}] no contest:{no_contest}/{length} || {(no_contest/length) * 100}\n\n")
 
 
 # print (f"Enter a phrase or `q` to exit: ")

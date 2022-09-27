@@ -137,57 +137,65 @@ length_testing = len (voted_classifier._classifiers[0].testing_set)
 #     result = voted_classifier.confidence(i)
 #     print(f"classification: {result[0]}  confidence: {result[1]} actual: {test_set[i].party}\n")
 
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = voted_classifier.confidence(i)
-    if result[0] == voted_classifier._classifiers[0].testing_set[i][1]:
-        correct += 1
-    elif result[0] == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, no_contest, length_testing)
 
 # These are using self-written classifying algo
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = naivebayes.classifyByWeightedFeatures (one_word_nb_classifier,
                                                     one_word_nb_classifier.testing_set[i][0])
-    if result == one_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    elif result == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("CUSTOM one_word_nb_classifier", correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("CUSTOM one_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
 
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = naivebayes.classifyByWeightedFeatures (two_word_nb_classifier,
                                                     two_word_nb_classifier.testing_set[i][0])
-    if result == two_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    elif result == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == two_word_nb_classifier.testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("CUSTOM two_word_nb_classifier", correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("CUSTOM two_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
 
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = naivebayes.classifyByWeightedFeatures (three_word_nb_classifier,
                                                     three_word_nb_classifier.testing_set[i][0])
-    if result == three_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    elif result == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("CUSTOM three_word_nb_classifier", correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("CUSTOM three_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
 
 # # idea: test each to see how accurate they are in predicting each party. Weight each classifiers vote
 # # based on their accuracy for a given party. This should help with tie-breaking.
@@ -195,41 +203,47 @@ naivebayes.outputResults ("CUSTOM three_word_nb_classifier", correct, unsure, wr
 # # idea: if three votes, weight three highest as it is least likely.
 
 # These use nltk classifier
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = one_word_nb_classifier.classify (one_word_nb_classifier.testing_set[i][0])
-    if result == one_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    elif result == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == one_word_nb_classifier.testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("BUILT-IN one_word_nb_classifier", correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("BUILT-IN one_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
 
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = two_word_nb_classifier.classify (two_word_nb_classifier.testing_set[i][0])
-    if result == two_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    elif result == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("BUILT-IN two_word_nb_classifier", correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("BUILT-IN two_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
 
-correct, unsure, wrong = 0, 0, 0 
+correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = three_word_nb_classifier.classify (three_word_nb_classifier.testing_set[i][0])
-    if result == three_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    elif result == "Moderate":
+    if result == "Moderate":
         unsure += 1
+    elif result == "No Contest":
+        no_contest += 1
+    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+        correct += 1
     else:
         wrong += 1
 
-naivebayes.outputResults ("BUILT-IN three_word_nb_classifier", correct, unsure, wrong, length_testing)
+naivebayes.outputResults ("BUILT-IN three_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
 
 
 # 1 word voter
