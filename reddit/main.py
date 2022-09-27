@@ -140,11 +140,11 @@ length_testing = len (voted_classifier._classifiers[0].testing_set)
 correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = voted_classifier.confidence(i)
-    if result == "Moderate":
+    if result[0] == "Moderate":
         unsure += 1
-    elif result == "No Contest":
+    elif result[0] == "No Contest":
         no_contest += 1
-    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+    elif result[0] == voted_classifier._classifiers[0].testing_set[i][1]:
         correct += 1
     else:
         wrong += 1
