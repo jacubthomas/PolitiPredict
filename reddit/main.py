@@ -35,7 +35,7 @@ class VoteClassifier (ClassifierI):
         votes = []
         for c in self._classifiers:
             features = c.testing_set[i]
-            v = c.classify(features[0])
+            v = c.classifyCustom(features[0])
             votes.append(v)
 
         choice_votes = votes.count(mode(votes))
@@ -47,6 +47,9 @@ dir_path = os.path.abspath (os.path.dirname ( __file__ ))
 # how the dataset will be split up
 training_partition = 0.7
 testing_partition = 0.3
+
+# # Wronglist for testing
+wrong_list = []
 
 '''
     Train and pickle work
@@ -133,10 +136,33 @@ voted_classifier = VoteClassifier(
     one_word_nb_classifier, two_word_nb_classifier, three_word_nb_classifier)
 
 length_testing = len (voted_classifier._classifiers[0].testing_set)
-# for i in range(0, len(test_set))[:10]:
-#     result = voted_classifier.confidence(i)
-#     print(f"classification: {result[0]}  confidence: {result[1]} actual: {test_set[i].party}\n")
 
+
+# This is a brute-force method which runs through the testing set, one-by-one,
+# and makes a prediction based on the arg classifier; then outputs the results
+# + accuracy over the set. 
+def assessMany (name, classifier): 
+    correct, unsure, no_contest, wrong = 0, 0, 0, 0
+    for i in range(0, length_testing):
+        result = classifier.classifyCustom (classifier.testing_set[i][0])
+        if result == "Moderate":
+            unsure += 1
+        elif result == "No Contest":
+            no_contest += 1
+        elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+            correct += 1
+        else:
+            wrong += 1
+    
+    naivebayes.outputResults (name ,correct, unsure, wrong, no_contest, length_testing)
+
+assessMany ("one_word_nb_classifier", one_word_nb_classifier)
+assessMany ("two_word_nb_classifier", two_word_nb_classifier)
+assessMany ("three_word_nb_classifier", three_word_nb_classifier)
+
+
+# this is the bf assessMany implemented for the voting classifier. 
+# will be cleaned up later.
 correct, unsure, no_contest, wrong = 0, 0, 0, 0
 for i in range(0, length_testing):
     result = voted_classifier.confidence(i)
@@ -150,117 +176,21 @@ for i in range(0, length_testing):
         wrong += 1
 
 naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, no_contest, length_testing)
-
-# These are using self-written classifying algo
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = naivebayes.classifyByWeightedFeatures (one_word_nb_classifier,
-                                                    one_word_nb_classifier.testing_set[i][0])
-    if result == "Moderate":
-        unsure += 1
-    elif result == "No Contest":
-        no_contest += 1
-    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
-
-naivebayes.outputResults ("CUSTOM one_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
-
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = naivebayes.classifyByWeightedFeatures (two_word_nb_classifier,
-                                                    two_word_nb_classifier.testing_set[i][0])
-    if result == "Moderate":
-        unsure += 1
-    elif result == "No Contest":
-        no_contest += 1
-    elif result == two_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
-
-naivebayes.outputResults ("CUSTOM two_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
-
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = naivebayes.classifyByWeightedFeatures (three_word_nb_classifier,
-                                                    three_word_nb_classifier.testing_set[i][0])
-    if result == "Moderate":
-        unsure += 1
-    elif result == "No Contest":
-        no_contest += 1
-    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
-
-naivebayes.outputResults ("CUSTOM three_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
-
-# # idea: test each to see how accurate they are in predicting each party. Weight each classifiers vote
-# # based on their accuracy for a given party. This should help with tie-breaking.
-
-# # idea: if three votes, weight three highest as it is least likely.
-
-# These use nltk classifier
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = one_word_nb_classifier.classify (one_word_nb_classifier.testing_set[i][0])
-    if result == "Moderate":
-        unsure += 1
-    elif result == "No Contest":
-        no_contest += 1
-    elif result == one_word_nb_classifier.testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
-
-naivebayes.outputResults ("BUILT-IN one_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
-
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = two_word_nb_classifier.classify (two_word_nb_classifier.testing_set[i][0])
-    if result == "Moderate":
-        unsure += 1
-    elif result == "No Contest":
-        no_contest += 1
-    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
-
-naivebayes.outputResults ("BUILT-IN two_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
-
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = three_word_nb_classifier.classify (three_word_nb_classifier.testing_set[i][0])
-    if result == "Moderate":
-        unsure += 1
-    elif result == "No Contest":
-        no_contest += 1
-    elif result == voted_classifier._classifiers[0].testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
-
-naivebayes.outputResults ("BUILT-IN three_word_nb_classifier", correct, unsure, wrong, no_contest, length_testing)
-
-
-# 1 word voter
-nbPLUS.oneToManyVoter (1,
-                       one_word_nb_classifier, 
-                       one_word_nb_classifier.training_set,
-                       one_word_nb_classifier.testing_set)
-# 2 word voter
-nbPLUS.oneToManyVoter (2,
-                       two_word_nb_classifier, 
-                       two_word_nb_classifier.training_set,
-                       two_word_nb_classifier.testing_set)
-# 3 word voter
-nbPLUS.oneToManyVoter (3,
-                       two_word_nb_classifier, 
-                       two_word_nb_classifier.training_set,
-                       two_word_nb_classifier.testing_set)
+# # 1 word voter
+# nbPLUS.oneToManyVoter (1,
+#                        one_word_nb_classifier, 
+#                        one_word_nb_classifier.training_set,
+#                        one_word_nb_classifier.testing_set)
+# # 2 word voter
+# nbPLUS.oneToManyVoter (2,
+#                        two_word_nb_classifier, 
+#                        two_word_nb_classifier.training_set,
+#                        two_word_nb_classifier.testing_set)
+# # 3 word voter
+# nbPLUS.oneToManyVoter (3,
+#                        two_word_nb_classifier, 
+#                        two_word_nb_classifier.training_set,
+#                        two_word_nb_classifier.testing_set)
 
 '''
 End of comment out for training.

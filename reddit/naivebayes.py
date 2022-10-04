@@ -19,11 +19,8 @@ class NBClassifier ():
         self.weighted_features = {}
         self.classifier = trainClassifier (self)
 
-    def classify (self, post):
-        result = classifyByWeightedFeatures (self, post)
-        # if result == "Moderate":
-        #     return self.classifier.classify (post)
-        return result
+    def classifyCustom (self, post):
+            return self.classifier.classify (post)
 
 ''' 
     create a list of tuples composed of all words in a post, 
@@ -88,7 +85,7 @@ def trainClassifier (self):
     new_stdout = io.StringIO()
     sys.stdout = new_stdout
 
-    classifier.show_most_informative_features (20000)
+    classifier.show_most_informative_features (20000 * self.phrase_length)
     output = new_stdout.getvalue()
 
     highest_values = reddit.updateWeightedFeatures (self.weighted_features, output, self.phrase_length)
