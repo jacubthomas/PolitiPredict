@@ -121,6 +121,33 @@ save_three_word_nb_classifier = open(f"{dir_path}/pickled_algos/three_word_nb_cl
 pickle.dump(three_word_nb_classifier, save_three_word_nb_classifier)
 save_three_word_nb_classifier.close()
 
+# # 1 word voter
+save_one_to_many_classifier = open(f"{dir_path}/pickled_algos/one_to_many_classifier_nb_classifier.pickle","wb")
+one_to_many_classifier = nbPLUS.oneToManyVoter (1,
+                                                one_word_nb_classifier, 
+                                                one_word_nb_classifier.training_set,
+                                                one_word_nb_classifier.testing_set)
+pickle.dump(one_to_many_classifier, save_one_to_many_classifier)
+save_one_to_many_classifier.close()
+
+# # 2 word voter
+save_two_to_many_classifier = open(f"{dir_path}/pickled_algos/two_to_many_classifier_nb_classifier.pickle","wb")
+two_to_many_classifier = nbPLUS.oneToManyVoter (2,
+                                                two_word_nb_classifier, 
+                                                two_word_nb_classifier.training_set,
+                                                two_word_nb_classifier.testing_set)
+pickle.dump(two_to_many_classifier, save_two_to_many_classifier)
+save_two_to_many_classifier.close()
+
+# # 3 word voter
+save_three_to_many_classifier = open(f"{dir_path}/pickled_algos/three_to_many_classifier_nb_classifier.pickle","wb")
+three_to_many_classifier = nbPLUS.oneToManyVoter (3,
+                                                  three_word_nb_classifier, 
+                                                  three_word_nb_classifier.training_set,
+                                                  three_word_nb_classifier.testing_set)
+pickle.dump(three_to_many_classifier, save_three_to_many_classifier)
+save_three_to_many_classifier.close()
+
     End train and pickle work
 '''
 
@@ -140,6 +167,18 @@ two_word_nb_classifier_f.close()
 three_word_nb_classifier_f = open(f"{dir_path}/pickled_algos/three_word_nb_classifier.pickle", "rb")
 three_word_nb_classifier = pickle.load(three_word_nb_classifier_f)
 three_word_nb_classifier_f.close()
+
+one_to_many_classifier_f = open(f"{dir_path}/pickled_algos/one_to_many_classifier_nb_classifier.pickle", "rb")
+one_to_many_classifier = pickle.load(one_to_many_classifier_f)
+one_to_many_classifier_f.close()
+
+two_to_many_classifier_f = open(f"{dir_path}/pickled_algos/two_to_many_classifier_nb_classifier.pickle", "rb")
+two_to_many_classifier = pickle.load(two_to_many_classifier_f)
+two_to_many_classifier_f.close()
+
+three_to_many_classifier_f = open(f"{dir_path}/pickled_algos/three_to_many_classifier_nb_classifier.pickle", "rb")
+three_to_many_classifier = pickle.load(three_to_many_classifier_f)
+three_to_many_classifier_f.close()
 '''
     End Load all pickled work
 '''
@@ -165,9 +204,31 @@ def assessMany (name, classifier):
             correct += 1
         else:
             wrong += 1
-            post_id = findPostDetails (classifier.testing_set[i][0], classifier)
-            exists_in_db = checkDBforID (post_id)
-            updateDB (exists_in_db, post_id)
+            # post_id = findPostDetails (classifier.testing_set[i][0], classifier)
+            # exists_in_db = checkDBforID (post_id)
+            # updateDB (exists_in_db, post_id)
+
+    
+    naivebayes.outputResults (name ,correct, unsure, wrong, no_contest, length_testing)
+
+# # This is a brute-force method which runs through the testing set, one-by-one,
+# # and makes a prediction based on the arg classifier; then outputs the results
+# # + accuracy over the set. 
+def assessManytoMany (name, classifier): 
+    correct, unsure, no_contest, wrong = 0, 0, 0, 0
+    for i in range(0, length_testing):
+        result = classifier.classify (voted_classifier._classifiers[0].testing_set[i][0])
+        if result == "Moderate":
+            unsure += 1
+        elif result == "No Contest":
+            no_contest += 1
+        elif result == voted_classifier._classifiers[0].testing_set[i][1]:
+            correct += 1
+        else:
+            wrong += 1
+            # post_id = findPostDetails (classifier.testing_set[i][0], classifier)
+            # exists_in_db = checkDBforID (post_id)
+            # updateDB (exists_in_db, post_id)
 
     
     naivebayes.outputResults (name ,correct, unsure, wrong, no_contest, length_testing)
@@ -220,8 +281,26 @@ assessMany ("one_word_nb_classifier", one_word_nb_classifier)
 assessMany ("two_word_nb_classifier", two_word_nb_classifier)
 assessMany ("three_word_nb_classifier", three_word_nb_classifier)
 
+assessManytoMany ("one_to_many_classifier", one_to_many_classifier)
+assessManytoMany ("two_to_many_classifier", two_to_many_classifier)
+assessManytoMany ("three_to_many_classifier", three_to_many_classifier)
+'''
+End of comment out for training.
+'''
+mycursor.close ()
 
 
+
+
+
+
+
+
+
+
+
+
+###### DON'T DELETE JUST YET ######
 # # this is the bf assessMany implemented for the voting classifier. 
 # # will be cleaned up later.
 # correct, unsure, no_contest, wrong = 0, 0, 0, 0
@@ -237,25 +316,3 @@ assessMany ("three_word_nb_classifier", three_word_nb_classifier)
 #         wrong += 1
 
 # naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, no_contest, length_testing)
-# for x in one_word_nb_classifier.testing_set:
-#     findPostDetails (x[0])
-# # 1 word voter
-# nbPLUS.oneToManyVoter (1,
-#                        one_word_nb_classifier, 
-#                        one_word_nb_classifier.training_set,
-#                        one_word_nb_classifier.testing_set)
-# # 2 word voter
-# nbPLUS.oneToManyVoter (2,
-#                        two_word_nb_classifier, 
-#                        two_word_nb_classifier.training_set,
-#                        two_word_nb_classifier.testing_set)
-# # 3 word voter
-# nbPLUS.oneToManyVoter (3,
-#                        two_word_nb_classifier, 
-#                        two_word_nb_classifier.training_set,
-#                        two_word_nb_classifier.testing_set)
-
-mycursor.close ()
-'''
-End of comment out for training.
-'''
