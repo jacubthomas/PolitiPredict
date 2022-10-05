@@ -16,6 +16,7 @@ from sklearn.svm import SVC, LinearSVC, NuSVC
 from nltk.classify import ClassifierI
 from statistics import mode
 
+import mysql.connector
 
 
 class VoteClassifier (ClassifierI):
@@ -48,8 +49,15 @@ dir_path = os.path.abspath (os.path.dirname ( __file__ ))
 training_partition = 0.7
 testing_partition = 0.3
 
-# # Wronglist for testing
-wrong_list = []
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="AdInfinitum2!"
+)
+
+mycursor = mydb.cursor()
+
+mycursor.execute("USE Reddit")
 
 '''
     Train and pickle work
@@ -86,6 +94,10 @@ for post in recombined_posts:
     before = post.text
     post.text = reddit.lemmatizeMe(lemmatizer, post.text)
     after = post.text
+
+for post in recombined_posts:
+    if len (post.text) < 8:
+        recombined_posts.remove (post)
 
 saverecombinedposts = open(f"{dir_path}/pickled_algos/recombined_posts.pickle","wb")
 pickle.dump(recombined_posts, saverecombinedposts)
@@ -131,16 +143,16 @@ three_word_nb_classifier_f.close()
 '''
     End Load all pickled work
 '''
-# Composite classifier
+# # Composite classifier
 voted_classifier = VoteClassifier(
     one_word_nb_classifier, two_word_nb_classifier, three_word_nb_classifier)
 
 length_testing = len (voted_classifier._classifiers[0].testing_set)
 
 
-# This is a brute-force method which runs through the testing set, one-by-one,
-# and makes a prediction based on the arg classifier; then outputs the results
-# + accuracy over the set. 
+# # This is a brute-force method which runs through the testing set, one-by-one,
+# # and makes a prediction based on the arg classifier; then outputs the results
+# # + accuracy over the set. 
 def assessMany (name, classifier): 
     correct, unsure, no_contest, wrong = 0, 0, 0, 0
     for i in range(0, length_testing):
@@ -153,29 +165,80 @@ def assessMany (name, classifier):
             correct += 1
         else:
             wrong += 1
+            post_id = findPostDetails (classifier.testing_set[i][0], classifier)
+            exists_in_db = checkDBforID (post_id)
+            updateDB (exists_in_db, post_id)
+
     
     naivebayes.outputResults (name ,correct, unsure, wrong, no_contest, length_testing)
+
+def findPostDetails (post, classifier):
+    for id,features in classifier.idToFeatureSet.items():
+        if post == features[0]:
+            return id
+
+
+def checkDBforID (post_id):
+    sql = f"SELECT * FROM WrongLists WHERE id = \'{post_id}\'" 
+    mycursor.execute(sql)
+    myresult = mycursor.fetchall()
+
+    if len (myresult) == 1:
+        return True
+    return False
+
+
+# Either insert a new wrongly predicted entry into the DB
+# or update the count for an existing entry. This will be helpful
+# for understanding which posts continue to challenge the
+# classifier.
+def updateDB (exists_in_db, post_id):
+
+    reddit = findRedditByID (post_id)
+    if exists_in_db == False:
+        sql = "INSERT INTO WrongLists (id, posts, party, count) VALUES(%s, %s, %s, %s)"
+        val = (post_id, reddit.text, reddit.party, 1)
+        mycursor.execute(sql, val)
+        mydb.commit()
+    else:
+        mycursor.execute (f"SELECT * FROM WrongLists WHERE id = \'{post_id}\'")
+        myresult = mycursor.fetchone()
+        sql = "UPDATE WrongLists SET count = %s WHERE id = %s"
+        val = (int (myresult[3]) + 1, post_id)
+        mycursor.execute(sql, val)
+        mydb.commit()
+
+def findRedditByID (post_id):
+    for x in recombined_posts:
+        if x.id == post_id:
+            return x
+    
+    return None
+
 
 assessMany ("one_word_nb_classifier", one_word_nb_classifier)
 assessMany ("two_word_nb_classifier", two_word_nb_classifier)
 assessMany ("three_word_nb_classifier", three_word_nb_classifier)
 
 
-# this is the bf assessMany implemented for the voting classifier. 
-# will be cleaned up later.
-correct, unsure, no_contest, wrong = 0, 0, 0, 0
-for i in range(0, length_testing):
-    result = voted_classifier.confidence(i)
-    if result[0] == "Moderate":
-        unsure += 1
-    elif result[0] == "No Contest":
-        no_contest += 1
-    elif result[0] == voted_classifier._classifiers[0].testing_set[i][1]:
-        correct += 1
-    else:
-        wrong += 1
 
-naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, no_contest, length_testing)
+# # this is the bf assessMany implemented for the voting classifier. 
+# # will be cleaned up later.
+# correct, unsure, no_contest, wrong = 0, 0, 0, 0
+# for i in range(0, length_testing):
+#     result = voted_classifier.confidence(i)
+#     if result[0] == "Moderate":
+#         unsure += 1
+#     elif result[0] == "No Contest":
+#         no_contest += 1
+#     elif result[0] == voted_classifier._classifiers[0].testing_set[i][1]:
+#         correct += 1
+#     else:
+#         wrong += 1
+
+# naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, no_contest, length_testing)
+# for x in one_word_nb_classifier.testing_set:
+#     findPostDetails (x[0])
 # # 1 word voter
 # nbPLUS.oneToManyVoter (1,
 #                        one_word_nb_classifier, 
@@ -192,6 +255,7 @@ naivebayes.outputResults ("voted_classifier",correct, unsure, wrong, no_contest,
 #                        two_word_nb_classifier.training_set,
 #                        two_word_nb_classifier.testing_set)
 
+mycursor.close ()
 '''
 End of comment out for training.
 '''

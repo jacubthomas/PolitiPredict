@@ -14,6 +14,7 @@ class NBClassifier ():
         self.training_partition = training_partition
         self.phrase_length = phrase_length
         self.featureset = []
+        self.idToFeatureSet = {}
         self.training_set = []
         self.testing_set = []
         self.weighted_features = {}
@@ -32,7 +33,8 @@ def trainClassifier (self):
         documents.append ( 
             (
                 reddit.allWordPhrases (posts.text, self.phrase_length), 
-                posts.party
+                posts.party,
+                posts.id
             )
         )
 
@@ -65,7 +67,12 @@ def trainClassifier (self):
         looks like: 
         (feature, party) => (map{ top_words, present_in_post}, party)
     '''
-    self.featuresets = [(reddit.find_the_features (rev, word_features), category) for (rev,category)in documents]
+    # self.featuresets = [(reddit.find_the_features (rev, word_features), category) for (rev,category)in documents]
+    self.featuresets = []
+    for (rev,category, id)in documents:
+        temp = (reddit.find_the_features (rev, word_features), category)
+        self.featuresets.append (temp)
+        self.idToFeatureSet [id] = temp
 
     # whole int for partition by % specified at top of file
     partition = int (len (self.featuresets) * self.training_partition)
