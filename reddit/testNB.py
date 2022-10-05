@@ -138,7 +138,8 @@ def assessManytoMany (name, classifier):
             correct += 1
         else:
             wrong += 1
-            post_id = findPostDetails (classifier.testing_set[i][0], classifier)
+            post_id = findPostDetails (voted_classifier._classifiers[0].testing_set[i][0],
+                                       voted_classifier._classifiers[0])
             exists_in_db = checkDBforID (post_id)
             updateDB (exists_in_db, post_id)
 
