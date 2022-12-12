@@ -1,6 +1,5 @@
 import os
 import pickle
-import reddit
 import naivebayes
 
 from nltk.tokenize import word_tokenize
@@ -62,33 +61,33 @@ mycursor = mydb.cursor()
 
 mycursor.execute("USE Reddit")
 
-
+pickle_dir = f"{dir_path}/pickled_algos"
 '''
     Load all pickled work
     comment this out if retraining algos
 '''
-recombined_posts_f = open(f"{dir_path}/pickled_algos/recombined_posts.pickle", "rb")
+recombined_posts_f = open(f"{pickle_dir}/recombined_posts_news.pickle", "rb")
 recombined_posts = pickle.load(recombined_posts_f)
 recombined_posts_f.close()
-one_word_nb_classifier_f = open(f"{dir_path}/pickled_algos/one_word_nb_classifier.pickle", "rb")
+one_word_nb_classifier_f = open(f"{pickle_dir}/one_word_nb_classifier_news.pickle", "rb")
 one_word_nb_classifier = pickle.load(one_word_nb_classifier_f)
 one_word_nb_classifier_f.close()
-two_word_nb_classifier_f = open(f"{dir_path}/pickled_algos/two_word_nb_classifier.pickle", "rb")
+two_word_nb_classifier_f = open(f"{pickle_dir}/two_word_nb_classifier_news.pickle", "rb")
 two_word_nb_classifier = pickle.load(two_word_nb_classifier_f)
 two_word_nb_classifier_f.close()
-three_word_nb_classifier_f = open(f"{dir_path}/pickled_algos/three_word_nb_classifier.pickle", "rb")
+three_word_nb_classifier_f = open(f"{pickle_dir}/three_word_nb_classifier_news.pickle", "rb")
 three_word_nb_classifier = pickle.load(three_word_nb_classifier_f)
 three_word_nb_classifier_f.close()
 
-one_to_many_classifier_f = open(f"{dir_path}/pickled_algos/one_to_many_classifier_nb_classifier.pickle", "rb")
+one_to_many_classifier_f = open(f"{pickle_dir}/one_to_many_classifier_nb_classifier_news.pickle", "rb")
 one_to_many_classifier = pickle.load(one_to_many_classifier_f)
 one_to_many_classifier_f.close()
 
-two_to_many_classifier_f = open(f"{dir_path}/pickled_algos/two_to_many_classifier_nb_classifier.pickle", "rb")
+two_to_many_classifier_f = open(f"{pickle_dir}/two_to_many_classifier_nb_classifier_news.pickle", "rb")
 two_to_many_classifier = pickle.load(two_to_many_classifier_f)
 two_to_many_classifier_f.close()
 
-three_to_many_classifier_f = open(f"{dir_path}/pickled_algos/three_to_many_classifier_nb_classifier.pickle", "rb")
+three_to_many_classifier_f = open(f"{pickle_dir}/three_to_many_classifier_nb_classifier_news.pickle", "rb")
 three_to_many_classifier = pickle.load(three_to_many_classifier_f)
 three_to_many_classifier_f.close()
 '''
@@ -100,6 +99,7 @@ voted_classifier = VoteClassifier(
 
 length_testing = len (voted_classifier._classifiers[0].testing_set)
 
+print (f'length_testing: {length_testing}\n')
 
 # # This is a brute-force method which runs through the testing set, one-by-one,
 # # and makes a prediction based on the arg classifier; then outputs the results
@@ -116,9 +116,9 @@ def assessMany (name, classifier):
             correct += 1
         else:
             wrong += 1
-            post_id = findPostDetails (classifier.testing_set[i][0], classifier)
-            exists_in_db = checkDBforID (post_id)
-            updateDB (exists_in_db, post_id)
+            # post_id = findPostDetails (classifier.testing_set[i][0], classifier)
+            # exists_in_db = checkDBforID (post_id)
+            # updateDB (exists_in_db, post_id)
 
     
     naivebayes.outputResults (name ,correct, unsure, wrong, no_contest, length_testing)
@@ -138,10 +138,10 @@ def assessManytoMany (name, classifier):
             correct += 1
         else:
             wrong += 1
-            post_id = findPostDetails (voted_classifier._classifiers[0].testing_set[i][0],
-                                       voted_classifier._classifiers[0])
-            exists_in_db = checkDBforID (post_id)
-            updateDB (exists_in_db, post_id)
+            # post_id = findPostDetails (voted_classifier._classifiers[0].testing_set[i][0],
+                                    #    voted_classifier._classifiers[0])
+            # exists_in_db = checkDBforID (post_id)
+            # updateDB (exists_in_db, post_id)
 
     
     naivebayes.outputResults (name ,correct, unsure, wrong, no_contest, length_testing)
@@ -168,6 +168,8 @@ def checkDBforID (post_id):
 def updateDB (exists_in_db, post_id):
 
     reddit = findRedditByID (post_id)
+    if len (reddit.text) > 500:
+        reddit.text = reddit.text[:500]
     if exists_in_db == False:
         sql = "INSERT INTO WrongLists (id, posts, party, count) VALUES(%s, %s, %s, %s)"
         val = (post_id, reddit.text, reddit.party, 1)
@@ -181,6 +183,7 @@ def updateDB (exists_in_db, post_id):
         mycursor.execute(sql, val)
         mydb.commit()
 
+# Returns reddit object from its unique id
 def findRedditByID (post_id):
     for x in recombined_posts:
         if x.id == post_id:
@@ -188,13 +191,13 @@ def findRedditByID (post_id):
     
     return None
 
-
+# Test classifiers against test_set, report wrong predictions to db
 assessMany ("one_word_nb_classifier", one_word_nb_classifier)
 assessMany ("two_word_nb_classifier", two_word_nb_classifier)
 assessMany ("three_word_nb_classifier", three_word_nb_classifier)
-
 assessManytoMany ("one_to_many_classifier", one_to_many_classifier)
 assessManytoMany ("two_to_many_classifier", two_to_many_classifier)
 assessManytoMany ("three_to_many_classifier", three_to_many_classifier)
 
+# close connection to DB
 mycursor.close ()

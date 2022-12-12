@@ -1,0 +1,195 @@
+Total posts being trained on: 354
+
+Naive Bayes 1-word Algo accuracy: 57.009345794392516%
+1-word Most important features
+rightwing : Libera : 13.0
+light : Libera : 10.7
+electoral : Libera : 10.0
+sit : Libera : 10.0
+jan : Libera : 9.4
+arent : Libera : 9.3
+choice : Libera : 8.5
+remember : Libera : 8.5
+roe : Libera : 8.5
+unclear : Libera : 8.5
+ten : Conser : 8.1
+mr : Conser : 7.8
+effect : Libera : 7.8
+field : Libera : 7.8
+financial : Libera : 7.8
+doesnt : Libera : 7.5
+via : Conser : 7.4
+affirm : Libera : 7.0
+fraud : Libera : 7.0
+hide : Libera : 7.0
+podcast : Libera : 7.0
+probably : Libera : 7.0
+pursue : Libera : 7.0
+racist : Libera : 7.0
+hill : Conser : 6.9
+
+Naive Bayes 2-word Algo accuracy: 79.43925233644859%
+2-word Most important features
+2020 election : Libera : 10.0
+two year : Libera : 8.5
+roe v : Libera : 7.8
+make sure : Libera : 7.0
+truth social : Libera : 6.3
+would likely : Libera : 6.3
+year ago : Libera : 6.3
+justice department : Libera : 6.0
+federal judge : Libera : 5.6
+high court : Libera : 5.6
+law school : Libera : 5.6
+political leader : Libera : 5.6
+republican party : Libera : 5.6
+hakeem jeffries : Conser : 5.1
+department justice : Libera : 4.8
+federal law : Libera : 4.8
+general merrick : Libera : 4.8
+lgbtq community : Libera : 4.8
+merrick garland : Libera : 4.8
+republican candidate : Libera : 4.8
+senate candidate : Libera : 4.8
+v wade : Libera : 4.7
+capitol hill : Conser : 4.5
+first lady : Conser : 4.5
+house democrats : Conser : 4.5
+
+Naive Bayes 3-word Algo accuracy: 81.30841121495327%
+3-word Most important features
+roe v wade : Libera : 7.8
+new york time : Libera : 5.6
+general merrick garland : Libera : 4.8
+supreme court justice : Libera : 4.8
+rep hakeem jeffries : Conser : 3.9
+u supreme court : Libera : 3.8
+2020 presidential election : Libera : 3.3
+attorney general merrick : Libera : 3.3
+georgia gov brian : Conser : 3.3
+hakeem jeffries new : Conser : 3.3
+lady jill biden : Conser : 3.3
+marjorie taylor greene : Libera : 2.9
+new york city : Libera : 2.9
+president joe bidens : Libera : 2.9
+rep marjorie taylor : Libera : 2.9
+sen raphael warnock : Conser : 2.7
+biden first lady : Conser : 2.7
+first lady jill : Conser : 2.7
+jeffries new york : Conser : 2.7
+dec 6 runoff : Libera : 2.6
+democratic sen raphael : Libera : 2.6
+director white house : Libera : 2.6
+donald trump jr : Libera : 2.6
+five people kill : Libera : 2.6
+house way mean : Libera : 2.6
+
+MNB_classifier Naive Bayes Algo accuracy: 74.76635514018692%
+BNB_classifier Naive Bayes Algo accuracy: 72.89719626168224%
+LR_classifier Algo accuracy: 86.91588785046729%
+SGD_classifier Algo accuracy: 84.11214953271028%
+MNB_classifier Naive Bayes Algo accuracy: 83.17757009345794%
+BNB_classifier Naive Bayes Algo accuracy: 47.66355140186916%
+LR_classifier Algo accuracy: 80.37383177570094%
+SGD_classifier Algo accuracy: 85.98130841121495%
+MNB_classifier Naive Bayes Algo accuracy: 76.63551401869158%
+BNB_classifier Naive Bayes Algo accuracy: 45.794392523364486%
+LR_classifier Algo accuracy: 69.1588785046729%
+SGD_classifier Algo accuracy: 77.57009345794393%
+length_testing: 107
+
+[one_word_nb_classifier] correct:61/107 || 57.009345794392516
+[one_word_nb_classifier] unsure:0/107 || 0.0
+[one_word_nb_classifier] wrong:46/107 || 42.99065420560748
+[one_word_nb_classifier] no contest:0/107 || 0.0
+
+
+[two_word_nb_classifier] correct:85/107 || 79.43925233644859
+[two_word_nb_classifier] unsure:0/107 || 0.0
+[two_word_nb_classifier] wrong:22/107 || 20.5607476635514
+[two_word_nb_classifier] no contest:0/107 || 0.0
+
+
+[three_word_nb_classifier] correct:87/107 || 81.30841121495327
+[three_word_nb_classifier] unsure:0/107 || 0.0
+[three_word_nb_classifier] wrong:20/107 || 18.69158878504673
+[three_word_nb_classifier] no contest:0/107 || 0.0
+
+
+[one_to_many_classifier] correct:93/107 || 86.91588785046729
+[one_to_many_classifier] unsure:0/107 || 0.0
+[one_to_many_classifier] wrong:14/107 || 13.084112149532709
+[one_to_many_classifier] no contest:0/107 || 0.0
+
+
+[two_to_many_classifier] correct:47/107 || 43.925233644859816
+[two_to_many_classifier] unsure:0/107 || 0.0
+[two_to_many_classifier] wrong:60/107 || 56.074766355140184
+[two_to_many_classifier] no contest:0/107 || 0.0
+
+
+[three_to_many_classifier] correct:47/107 || 43.925233644859816
+[three_to_many_classifier] unsure:0/107 || 0.0
+[three_to_many_classifier] wrong:60/107 || 56.074766355140184
+[three_to_many_classifier] no contest:0/107 || 0.0
+
+
+(base) jacobharrington@Jacobs-MBP reddit % cd neural_net 
+(base) jacobharrington@Jacobs-MBP neural_net % python3 neural_net.py 
+2022-12-03 19:32:59.195372: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep 
+Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+
+
+
+
+2022-12-03 19:33:13.708982: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep 
+Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING:tensorflow:Please fix your imports. Module tensorflow.python.training.tracking.data_structures has been moved to 
+tensorflow.python.trackable.data_structures. The old module will be deleted in version 2.11.
+WARNING:tensorflow:From 
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/tensorflow/python/autograph/pyct/static_analysis/liveness.py:83: 
+Analyzer.lamba_check (from tensorflow.python.autograph.pyct.static_analysis.liveness) is deprecated and will be removed after 2023-09-23.
+Instructions for updating:
+Lambda fuctions will be no more assumed to be used in the statement where they are used, or at least in the same block. 
+https://github.com/tensorflow/tensorflow/issues/56089
+WARNING:tensorflow:From 
+/Library/Frameworks/Python.framework/Versions/3.10/lib/python3.10/site-packages/tensorflow/python/autograph/pyct/static_analysis/liveness.py:83: 
+Analyzer.lamba_check (from tensorflow.python.autograph.pyct.static_analysis.liveness) is deprecated and will be removed after 2023-09-23.
+Instructions for updating:
+Lambda fuctions will be no more assumed to be used in the statement where they are used, or at least in the same block. 
+https://github.com/tensorflow/tensorflow/issues/56089
+16/16 [==============================] - 1s 2ms/step - loss: 0.7636 - accuracy: 0.4899
+4/4 [==============================] - 0s 2ms/step - loss: 0.7857 - accuracy: 0.4528
+Epoch 1/10
+16/16 [==============================] - 13s 732ms/step - loss: 0.7653 - accuracy: 0.5142 - val_loss: 0.7185 - val_accuracy: 0.4528
+Epoch 2/10
+16/16 [==============================] - 12s 744ms/step - loss: 0.6908 - accuracy: 0.5466 - val_loss: 0.6930 - val_accuracy: 0.4717
+Epoch 3/10
+16/16 [==============================] - 12s 745ms/step - loss: 0.6775 - accuracy: 0.5911 - val_loss: 0.6791 - val_accuracy: 0.5660
+Epoch 4/10
+16/16 [==============================] - 12s 730ms/step - loss: 0.6420 - accuracy: 0.6235 - val_loss: 0.6639 - val_accuracy: 0.6415
+Epoch 5/10
+16/16 [==============================] - 12s 739ms/step - loss: 0.6097 - accuracy: 0.7045 - val_loss: 0.6314 - val_accuracy: 0.7736
+Epoch 6/10
+16/16 [==============================] - 12s 728ms/step - loss: 0.5896 - accuracy: 0.6923 - val_loss: 0.5947 - val_accuracy: 0.7925
+Epoch 7/10
+16/16 [==============================] - 12s 734ms/step - loss: 0.5253 - accuracy: 0.7490 - val_loss: 0.5530 - val_accuracy: 0.8302
+Epoch 8/10
+16/16 [==============================] - 12s 729ms/step - loss: 0.4588 - accuracy: 0.8097 - val_loss: 0.5131 - val_accuracy: 0.8302
+Epoch 9/10
+16/16 [==============================] - 12s 727ms/step - loss: 0.3991 - accuracy: 0.8057 - val_loss: 0.4796 - val_accuracy: 0.8302
+Epoch 10/10
+16/16 [==============================] - 12s 726ms/step - loss: 0.3509 - accuracy: 0.8785 - val_loss: 0.4424 - val_accuracy: 0.8113
+4/4 [==============================] - 0s 117ms/step - loss: 0.4093 - accuracy: 0.7963
+
+
+10-cluster kmeans
+accuracy = 0.655367231638418, with 232 and 122 and 0 ties!
+
+25-cluster kmeans
+accuracy = 0.7598870056497176, with 269 and 85 and 0 ties!
+
+50-cluster kmeans
+accuracy = 0.783625730994152, with 268 and 74 and 12 ties!

@@ -1,16 +1,17 @@
-import io
-import sys
 import nltk
-import pickle
-import reddit
-import random
-from nltk.tokenize import word_tokenize
 from nltk.classify.scikitlearn import SklearnClassifier	# wrapper for nltk to use SK-Learn
 from sklearn.naive_bayes import MultinomialNB, GaussianNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from nltk.classify import ClassifierI
 from statistics import mode
+
+'''
+Overview: takes in a a classifier + featuresets and generates a composite
+classifier, made up of various sk-learn classifiers, and a voting system.
+It is the hope that these sk classifiers will find different insights,
+disagree, and yield a smarter prediction via vote.
+'''
 
 class VoteClassifier (ClassifierI):
 	def __init__ (self, *classifiers):
@@ -57,27 +58,26 @@ def oneToManyVoter (phrase_length, classifier, training_set, testing_set):
     SGD_classifier.train (training_set)
     print (f"SGD_classifier Algo accuracy: {(nltk.classify.accuracy(SGD_classifier, testing_set)) * 100}%")
 
-    SVC_classifier = SklearnClassifier (SVC ())
-    SVC_classifier.train (training_set)
-    print (f"SVC_classifier Algo accuracy: {(nltk.classify.accuracy(SVC_classifier, testing_set)) * 100}%")
+    # SVC_classifier = SklearnClassifier (SVC ())
+    # SVC_classifier.train (training_set)
+    # print (f"SVC_classifier Algo accuracy: {(nltk.classify.accuracy(SVC_classifier, testing_set)) * 100}%")
 
-    LinearSVC_classifier = SklearnClassifier (LinearSVC ())
-    LinearSVC_classifier.train (training_set)
-    print (f"LinearSVC_classifier Algo accuracy: {(nltk.classify.accuracy(LinearSVC_classifier, testing_set)) * 100}%")
+    # LinearSVC_classifier = SklearnClassifier (LinearSVC ())
+    # LinearSVC_classifier.train (training_set)
+    # print (f"LinearSVC_classifier Algo accuracy: {(nltk.classify.accuracy(LinearSVC_classifier, testing_set)) * 100}%")
 
-    NuSVC_classifier = SklearnClassifier (NuSVC ())
-    NuSVC_classifier.train (training_set)
-    print (f"NuSVC_classifier Algo accuracy: {(nltk.classify.accuracy(NuSVC_classifier, testing_set)) * 100}%")
+    # NuSVC_classifier = SklearnClassifier (NuSVC ())
+    # NuSVC_classifier.train (training_set)
+    # print (f"NuSVC_classifier Algo accuracy: {(nltk.classify.accuracy(NuSVC_classifier, testing_set)) * 100}%")
 
     # Composite classifier
-    voted_classifier = VoteClassifier ( 
-                                        # classifier, 
-                                        MNB_classifier,
+    voted_classifier = VoteClassifier ( MNB_classifier,
                                         BNB_classifier, 
                                         LR_classifier,
                                         SGD_classifier,
-                                        SVC_classifier, 
-                                        NuSVC_classifier)
+                                        # SVC_classifier, 
+                                        # NuSVC_classifier
+                                        )
 
     # print (f"{phrase_length} voted_classifier accuracy: {(nltk.classify.accuracy(voted_classifier, testing_set)* 100)}%")
     return voted_classifier

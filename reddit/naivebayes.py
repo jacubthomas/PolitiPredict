@@ -6,7 +6,7 @@ import random
 from nltk.tokenize import word_tokenize
 
 ''' 
-Yields an Naive-Bayes classifier, trained on and capable of evaluating n-length phrases
+Yields a Naive-Bayes classifier, trained on and capable of evaluating n-length phrases
 '''
 class NBClassifier ():
     def __init__(self, posts, training_partition, phrase_length):
@@ -58,7 +58,7 @@ def trainClassifier (self):
                     )
 
     # list of top 3000 occurring words in posts
-    word_features = list (all_words.keys ())[:20000]
+    word_features = list (all_words.keys ())[:3000]
 
     '''
         create a complex set of tuples, or rather features, by party.

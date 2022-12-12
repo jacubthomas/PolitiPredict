@@ -1,23 +1,17 @@
-from operator import truediv
 from nltk.corpus import wordnet as wn
-from cgitb import text
 from nltk.stem import WordNetLemmatizer
-from typing import List
-from nltk.tokenize import PunktSentenceTokenizer
-from nltk.corpus import gutenberg
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import pandas as pd
 import string
 import os
-
+import mysql.connector
 
 class Reddit:
-    def __init__(self, id: int, party: str, text: str, vader=None):
+    def __init__(self, id: int, party: str, text: str, comments = None):
         self.id = id
         self.party = party
-        self.vader = vader
         try:
             string_encode = text.encode("ascii", "ignore")
             self.text = string_encode.decode()
@@ -25,8 +19,33 @@ class Reddit:
             self.text = self.text.translate(
                 str.maketrans('', '', string.punctuation)
                 )
+            if pd.notnull (comments):
+                try:
+                    string_encode = comments.encode("ascii", "ignore")
+                    self.comments = string_encode.decode ()
+                    self.comments = self.comments.lower ()
+                    self.comments = self.comments.translate(
+                        str.maketrans('', '', string.punctuation)
+                        )
+                    self.text += self.comments
+                except:
+                    print (f'error: id is {id}')
         except AttributeError:
-            self.text = text
+            if isinstance(text, int):
+                self.text = ' '
+            else:
+                self.text = text
+            if pd.notnull (comments):
+                try:
+                    string_encode = comments.encode("ascii", "ignore")
+                    self.comments = string_encode.decode ()
+                    self.comments = self.comments.lower ()
+                    self.comments = self.comments.translate(
+                        str.maketrans('', '', string.punctuation)
+                        )
+                    self.text += self.comments
+                except:
+                    print (f'error: id is {id}')
     def __str__(self):
         return f"{self.id}:{self.party}:{self.text}"
 
@@ -37,10 +56,50 @@ def processDataset ():
     dataframe1 = pd.read_excel(dir_path+'/reddit.xls')
     for row in dataframe1.iterrows():
         row = row[1]
-        r = Reddit(row.Id, row.Political_Party, row.Title)
+        r = Reddit(row.Id, row.Political_Party, row.Title, row.Text)
         all_posts.append (r)
     return all_posts
-        
+
+# Ingest dataset, creating objects from post, and appending to list by party
+def processDatasetMYSQL ():
+    all_posts = []
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="AdInfinitum2!"
+    )
+    mycursor = mydb.cursor()
+    mycursor.execute("USE Reddit")
+    sql = "SELECT * FROM Posts"
+    mycursor.execute(sql)
+    myresult = mycursor.fetchall()
+
+    for result in myresult:
+        result = Reddit(result[0], 
+                        result[2],
+                        result[1],
+                        result[4]
+                        )
+        all_posts.append (result)
+
+    # close connection to DB
+    mycursor.close ()
+    return all_posts
+
+# Ingest dataset, creating objects from post, and appending to list by party
+def processDatasetXLSX ():
+    all_posts = []
+    index = 0
+    dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'data'))
+    dataframe1 = pd.read_excel(dir_path+'/News.xlsx')
+    for row in dataframe1.iterrows():
+        row = row[1]
+        r = Reddit(index, row.party, row.text)
+        # print (f'{index}: {row.party}, {row.text}\n')
+        all_posts.append (r)
+        index += 1
+    return all_posts
+
 def splitByParty (all_posts):
     l_posts, r_posts = [], []
     for post in all_posts:
@@ -177,6 +236,7 @@ def allWordPhrases (post, phrase_length: int):
         pass   
     return all_phrases
 
+# UNUSED 
 # populate map with key = word, value (party, weight)
 # returns 25 key words with weights
 def updateWeightedFeatures (weighted_features: dict,

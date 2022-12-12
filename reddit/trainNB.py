@@ -58,7 +58,10 @@ testing_partition = 0.3
 '''
 
 # retrieve all posts, as constructed reddit objects, lowercased texts
-all_posts = reddit.processDataset()
+# all_posts = reddit.processDataset ()
+# all_posts = reddit.processDatasetMYSQL ()
+all_posts = reddit.processDatasetXLSX ()
+
 
 # partition posts by party
 lib_posts, rep_posts = reddit.splitByParty(all_posts)
@@ -71,6 +74,11 @@ random.shuffle(rep_posts)
 len_all_posts = len(all_posts)
 len_lib_posts = len(lib_posts)
 len_rep_posts = len(rep_posts)
+
+# equalize sets
+lib_posts = lib_posts[:len_rep_posts]
+
+print (f'\nTotal posts being trained on: {len(rep_posts)+len(lib_posts)}\n')
 
 # recombine lists
 recombined_posts = lib_posts + rep_posts
@@ -89,6 +97,8 @@ for post in recombined_posts:
     post.text = reddit.lemmatizeMe(lemmatizer, post.text)
     after = post.text
 
+# after processing, posts may be empty or too small to evaluate
+# these posts are trimmed.
 for post in recombined_posts:
     if len (post.text) < 8:
         recombined_posts.remove (post)
@@ -101,7 +111,6 @@ isExist = os.path.exists (pickle_dir)
 if not isExist:
   # Create a new directory because it does not exist 
   os.makedirs (pickle_dir)
-  print("The new directory is created!")
 
 # Delete all previous pickles!
 for f in os.listdir(pickle_dir):
@@ -110,30 +119,31 @@ for f in os.listdir(pickle_dir):
     except:
         pass
 
-saverecombinedposts = open(f"{dir_path}/pickled_algos/recombined_posts.pickle","wb")
+# pickle work as we go
+saverecombinedposts = open(f"{pickle_dir}/recombined_posts_news.pickle","wb")
 pickle.dump(recombined_posts, saverecombinedposts)
 saverecombinedposts.close()
 
 one_word_nb_classifier = naivebayes.NBClassifier(
     recombined_posts, training_partition, 1)
-save_one_word_nb_classifier = open(f"{dir_path}/pickled_algos/one_word_nb_classifier.pickle","wb")
+save_one_word_nb_classifier = open(f"{pickle_dir}/one_word_nb_classifier_news.pickle","wb")
 pickle.dump(one_word_nb_classifier, save_one_word_nb_classifier)
 save_one_word_nb_classifier.close()
 
 two_word_nb_classifier = naivebayes.NBClassifier(
     recombined_posts, training_partition, 2)
-save_two_word_nb_classifier = open(f"{dir_path}/pickled_algos/two_word_nb_classifier.pickle","wb")
+save_two_word_nb_classifier = open(f"{pickle_dir}/two_word_nb_classifier_news.pickle","wb")
 pickle.dump(two_word_nb_classifier, save_two_word_nb_classifier)
 save_two_word_nb_classifier.close()
 
 three_word_nb_classifier = naivebayes.NBClassifier(
     recombined_posts, training_partition, 3)
-save_three_word_nb_classifier = open(f"{dir_path}/pickled_algos/three_word_nb_classifier.pickle","wb")
+save_three_word_nb_classifier = open(f"{pickle_dir}/three_word_nb_classifier_news.pickle","wb")
 pickle.dump(three_word_nb_classifier, save_three_word_nb_classifier)
 save_three_word_nb_classifier.close()
 
-# # 1 word voter
-save_one_to_many_classifier = open(f"{dir_path}/pickled_algos/one_to_many_classifier_nb_classifier.pickle","wb")
+# 1 word voter
+save_one_to_many_classifier = open(f"{pickle_dir}/one_to_many_classifier_nb_classifier_news.pickle","wb")
 one_to_many_classifier = nbPLUS.oneToManyVoter (1,
                                                 one_word_nb_classifier, 
                                                 one_word_nb_classifier.training_set,
@@ -142,7 +152,7 @@ pickle.dump(one_to_many_classifier, save_one_to_many_classifier)
 save_one_to_many_classifier.close()
 
 # # 2 word voter
-save_two_to_many_classifier = open(f"{dir_path}/pickled_algos/two_to_many_classifier_nb_classifier.pickle","wb")
+save_two_to_many_classifier = open(f"{pickle_dir}/two_to_many_classifier_nb_classifier_news.pickle","wb")
 two_to_many_classifier = nbPLUS.oneToManyVoter (2,
                                                 two_word_nb_classifier, 
                                                 two_word_nb_classifier.training_set,
@@ -151,7 +161,7 @@ pickle.dump(two_to_many_classifier, save_two_to_many_classifier)
 save_two_to_many_classifier.close()
 
 # # 3 word voter
-save_three_to_many_classifier = open(f"{dir_path}/pickled_algos/three_to_many_classifier_nb_classifier.pickle","wb")
+save_three_to_many_classifier = open(f"{pickle_dir}/three_to_many_classifier_nb_classifier_news.pickle","wb")
 three_to_many_classifier = nbPLUS.oneToManyVoter (3,
                                                   three_word_nb_classifier, 
                                                   three_word_nb_classifier.training_set,
